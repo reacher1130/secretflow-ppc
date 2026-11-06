@@ -1,0 +1,24 @@
+diff --git a/sources/ippcp/crypto_mb/CMakeLists.txt b/sources/ippcp/crypto_mb/CMakeLists.txt
+index 4c4e3f0..a1b2c3d 100644
+--- a/sources/ippcp/crypto_mb/CMakeLists.txt
++++ b/sources/ippcp/crypto_mb/CMakeLists.txt
+@@ -19,6 +19,15 @@
+ #===============================================================================
+
+ cmake_minimum_required(VERSION 3.10)
+
+ project("crypto_mb" C)
+
++if(NOT COMMAND mbx_getlibversion)
++  macro(mbx_getlibversion VERSION_FILE)
++    set(MBX_VER_MAJOR 2021)
++    set(MBX_VER_MINOR 8)
++    set(MBX_VER_REV 0)
++    set(MBX_VER_FULL "2021.8.0")
++    set(MBX_INTERFACE_VERSION_MAJOR 2021)
++    set(MBX_INTERFACE_VERSION_MINOR 8)
++  endmacro()
++endif()
++
+ include("${CMAKE_CURRENT_SOURCE_DIR}/src/cmake/crypto_mb-utils.cmake")
+ mbx_getlibversion("${CMAKE_CURRENT_SOURCE_DIR}/include/crypto_mb/version.h")

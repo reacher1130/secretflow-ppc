@@ -1,0 +1,19 @@
+apiVersion: kuscia.secretflow/v1alpha1
+kind: KusciaJob
+metadata:
+  name: job-ecdh-psi
+  namespace: cross-domain
+  labels:
+    "kuscia.secretflow/interconn-protocol-type": "bfia"
+spec:
+  initiator: alice
+  tasks:
+    - alias: ecdh_psi_1
+      appImage: ecdh-psi
+      parties:
+        - domainID: alice
+          role: host
+        - domainID: bob
+          role: guest
+      taskInputConfig: '{"name":"ecdh_psi_1","module_name":"ecdh_psi","output":[{"type":"dataset","key":"result"}],"role":{"host":["alice"],"guest":["bob"]},"initiator":{"role":"host","node_id":"alice"},"task_params":{"host":{"0":{"has_label":true,"name":"psi_1.csv","namespace":"data"}},"guest":{"0":{"has_label":false,"name":"psi_2.csv","namespace":"data"}},"common":{"algo":"ecdh_psi","protocol_families":"ecc","curve_type":"curve25519","hash_type":"sha_256","hash2curve_strategy":"direct_hash_as_point_x","point_octet_format":"uncompressed","bit_length_after_truncated":-1,"result_to_rank":-1,"field_names":{"host.0":"id1", "guest.0":"id2"},"start_transport":false}}}'
+      tolerable: false

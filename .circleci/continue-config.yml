@@ -1,0 +1,590 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+parameters:
+  base:
+    type: boolean
+    default: false
+  infra:
+    type: boolean
+    default: false
+  sf_maths:
+    type: boolean
+    default: false
+  sf_ml:
+    type: boolean
+    default: false
+  sf_preprocessing:
+    type: boolean
+    default: false
+  sf_stats:
+    type: boolean
+    default: false
+  sf_component:
+    type: boolean
+    default: false
+  sf_any:
+    type: boolean
+    default: false
+  test_ml:
+    type: boolean
+    default: false
+  test_preprocessing:
+    type: boolean
+    default: false
+  test_stats:
+    type: boolean
+    default: false
+  test_infra:
+    type: boolean
+    default: false
+  test_component:
+    type: boolean
+    default: false
+  test_any:
+    type: boolean
+    default: false
+
+executors:
+  linux_executor: # declares a reusable executor
+    parameters:
+      resource_class:
+        type: string
+    docker:
+      - image: secretflow/ubuntu-base-ci:latest
+    resource_class: << parameters.resource_class >>
+    shell: /bin/bash --login -eo pipefail
+  macos_executor:
+    macos:
+      xcode: 15.1.0
+    resource_class: macos.m1.large.gen1
+
+commands:
+  kill_countdown:
+    steps:
+      - run:
+          name: Cancel job after set time
+          background: true
+          command: |
+            sleep 2400
+            echo "Canceling workflow as too much time has elapsed"
+            curl -X POST --header "Content-Type: application/json" "https://circleci.com/api/v2/workflow/${CIRCLE_WORKFLOW_ID}/cancel?circle-token=${BUILD_TIMER_TOKEN}"
+  macos_pre_setup:
+    steps:
+      - run:
+          name: Install brew dependencies
+          command: brew install wget libomp
+      - run:
+          name: Install miniconda
+          command: |
+            wget https://repo.anaconda.com/miniconda/Miniconda3-py310_24.1.2-0-MacOSX-arm64.sh -O ~/miniconda.sh
+            bash ~/miniconda.sh -b -p $HOME/miniconda
+            source $HOME/miniconda/bin/activate
+            conda init zsh bash
+  pytest_wrapper:
+    parameters:
+      target_folder:
+        type: string
+      concurrent_num:
+        type: string
+        default: "auto"
+      testmon_prefix:
+        type: string
+      mode:
+        type: string
+        default: "sim"
+    steps:
+      - restore_cache:
+          name: Restore pytest testmondata
+          key: testmondata_<<parameters.testmon_prefix>>_{{ arch }}_{{ .Branch }}_
+      - restore_cache:
+          name: restore pip cache
+          key: pip-{{ arch }}-{{ .Branch }}-{{ checksum "uv.lock" }}
+      - run:
+          name: "Run tests"
+          command: |
+            set +e
+            conda init
+            pip install --force-reinstall pytest pytest-xdist pytest-cov pytest-testmon
+
+            pytest --testmon --env <<parameters.mode>> -n <<parameters.concurrent_num>> --junitxml=results.xml -v -x --capture=no --cov=secretflow/  --cov-report=xml:coverage.xml  << parameters.target_folder >>
+            ret=$?
+            set -e
+            if [ $ret -eq 0 ] || [ $ret -eq 5 ]; then
+              exit 0
+            fi
+            exit $ret
+      - store_test_results:
+          path: ./results.xml
+      - save_cache:
+          key: testmondata_<<parameters.testmon_prefix>>_{{ arch }}_{{ .Branch }}_{{ .Revision }}
+          paths:
+            - .testmondata
+          when: always
+  run_ml_test:
+    steps:
+      - kill_countdown
+      - when:
+          condition:
+            or:
+              - << pipeline.parameters.base >>
+              - << pipeline.parameters.infra >>
+              - << pipeline.parameters.sf_maths >>
+              - << pipeline.parameters.sf_ml >>
+              - << pipeline.parameters.test_ml >>
+          steps:
+            - pytest_wrapper:
+                target_folder: tests/ml/
+                testmon_prefix: ml
+  run_preprocessing_test:
+    steps:
+      - kill_countdown
+      - when:
+          condition:
+            or:
+              - << pipeline.parameters.base >>
+              - << pipeline.parameters.infra >>
+              - << pipeline.parameters.sf_maths >>
+              - << pipeline.parameters.sf_preprocessing >>
+              - << pipeline.parameters.test_preprocessing >>
+          steps:
+            - pytest_wrapper:
+                target_folder: tests/preprocessing/
+                testmon_prefix: preprocessing
+  run_stats_test:
+    steps:
+      - kill_countdown
+      - when:
+          condition:
+            or:
+              - << pipeline.parameters.base >>
+              - << pipeline.parameters.infra >>
+              - << pipeline.parameters.sf_maths >>
+              - << pipeline.parameters.sf_stats >>
+              - << pipeline.parameters.test_stats >>
+          steps:
+            - pytest_wrapper:
+                target_folder: tests/stats/
+                testmon_prefix: stats
+  run_infra_test:
+    steps:
+      - kill_countdown
+      - when:
+          condition:
+            or:
+              - << pipeline.parameters.base >>
+              - << pipeline.parameters.infra >>
+              - << pipeline.parameters.test_infra >>
+          steps:
+            - pytest_wrapper:
+                target_folder: tests/data/ tests/device/ tests/security/ tests/utils/ tests/kuscia/
+                testmon_prefix: infra
+  run_ml_sim_test:
+    steps:
+      - kill_countdown
+      - when:
+          condition:
+            or:
+              - << pipeline.parameters.base >>
+              - << pipeline.parameters.infra >>
+              - << pipeline.parameters.sf_maths >>
+              - << pipeline.parameters.sf_ml >>
+              - << pipeline.parameters.test_ml >>
+          steps:
+            - pytest_wrapper:
+                target_folder: tests/ml/
+                testmon_prefix: ml_sim
+                mode: "sim"
+  run_other_sim_test:
+    steps:
+      - kill_countdown
+      - when:
+          condition:
+            or:
+              - << pipeline.parameters.base >>
+              - << pipeline.parameters.sf_any >>
+              - << pipeline.parameters.test_any >>
+          steps:
+            - pytest_wrapper:
+                target_folder: --ignore=tests/ml/ tests/
+                testmon_prefix: other_sim
+                mode: "sim"
+                concurrent_num: "8"
+  run_component_test_wrapper:
+    parameters:
+      target_folder:
+        type: string
+      testmon_prefix:
+        type: string
+    steps:
+      - kill_countdown
+      - when:
+          condition:
+            or:
+              - << pipeline.parameters.base >>
+              - << pipeline.parameters.sf_ml >>
+              - << pipeline.parameters.sf_stats >>
+              - << pipeline.parameters.sf_preprocessing >>
+              - << pipeline.parameters.test_component >>
+          steps:
+            - pytest_wrapper:
+                target_folder: <<parameters.target_folder>>
+                testmon_prefix: <<parameters.testmon_prefix>>
+                mode: "sim"
+
+jobs:
+  linux_build:
+    parameters:
+      resource_class:
+        type: string
+    executor:
+      name: linux_executor
+      resource_class: << parameters.resource_class >>
+    steps:
+      - checkout
+      - restore_cache:
+          name: restore pip cache
+          key: &pip-cache pip-{{ arch }}-{{ .Branch }}-{{ checksum "uv.lock" }}
+      - run:
+          name: Install python deps
+          command: |
+            conda init
+            pip install uv
+            uv pip install -r pyproject.toml --extra dev --system
+      - save_cache:
+          key: *pip-cache
+          paths:
+            - /root/miniconda3/lib/python3.10/site-packages
+  macos_build:
+    executor: macos_executor
+    steps:
+      - checkout
+      - run:
+          name: "Install homebrew dependencies"
+          command: |
+            brew install uv
+      - run:
+          name: "Install Miniconda"
+          command: |
+            wget https://repo.anaconda.com/miniconda/Miniconda3-py310_24.1.2-0-MacOSX-arm64.sh -O ~/miniconda.sh
+            bash ~/miniconda.sh -b -p $HOME/miniconda
+            source $HOME/miniconda/bin/activate
+            conda init zsh bash
+      - restore_cache:
+          name: restore pip cache
+          key: &pip-cache pip-{{ arch }}-{{ .Branch }}-{{ checksum "uv.lock" }}
+      - run:
+          name: Install python dependencies
+          command: |
+            conda init
+            uv pip install -r pyproject.toml --extra dev --system
+      - save_cache:
+          key: *pip-cache
+          paths:
+            - /Users/distiller/miniconda/lib/python3.10/site-packages
+  linux_ml_test:
+    parameters:
+      resource_class:
+        type: string
+    executor:
+      name: linux_executor
+      resource_class: << parameters.resource_class >>
+    steps:
+      - checkout
+      - run_ml_test
+  linux_preprocessing_test:
+    parameters:
+      resource_class:
+        type: string
+    executor:
+      name: linux_executor
+      resource_class: << parameters.resource_class >>
+    steps:
+      - checkout
+      - run_preprocessing_test
+  linux_stats_test:
+    parameters:
+      resource_class:
+        type: string
+    executor:
+      name: linux_executor
+      resource_class: << parameters.resource_class >>
+    steps:
+      - checkout
+      - run_stats_test
+  linux_infra_test:
+    parameters:
+      resource_class:
+        type: string
+    executor:
+      name: linux_executor
+      resource_class: << parameters.resource_class >>
+    steps:
+      - checkout
+      - run_infra_test
+  linux_component_infra_test:
+    parameters:
+      resource_class:
+        type: string
+    executor:
+      name: linux_executor
+      resource_class: << parameters.resource_class >>
+    steps:
+      - checkout
+      - run_component_test_wrapper:
+          target_folder: tests/component/infra/
+          testmon_prefix: component_infra
+  linux_component_io_test:
+    parameters:
+      resource_class:
+        type: string
+    executor:
+      name: linux_executor
+      resource_class: << parameters.resource_class >>
+    steps:
+      - checkout
+      - run_component_test_wrapper:
+          target_folder: tests/component/io/
+          testmon_prefix: component_io
+  linux_component_ml_test:
+    parameters:
+      resource_class:
+        type: string
+    executor:
+      name: linux_executor
+      resource_class: << parameters.resource_class >>
+    steps:
+      - checkout
+      - run_component_test_wrapper:
+          target_folder: tests/component/ml/
+          testmon_prefix: component_ml
+  linux_component_stats_test:
+    parameters:
+      resource_class:
+        type: string
+    executor:
+      name: linux_executor
+      resource_class: << parameters.resource_class >>
+    steps:
+      - checkout
+      - run_component_test_wrapper:
+          target_folder: tests/component/stats/
+          testmon_prefix: component_stats
+  linux_component_preprocessing_test:
+    parameters:
+      resource_class:
+        type: string
+    executor:
+      name: linux_executor
+      resource_class: << parameters.resource_class >>
+    steps:
+      - checkout
+      - run_component_test_wrapper:
+          target_folder: tests/component/preprocessing
+          testmon_prefix: component_processing
+  linux_ml_sim_test:
+    parameters:
+      resource_class:
+        type: string
+    executor:
+      name: linux_executor
+      resource_class: << parameters.resource_class >>
+    steps:
+      - checkout
+      - run_ml_sim_test
+  linux_other_sim_test:
+    parameters:
+      resource_class:
+        type: string
+    executor:
+      name: linux_executor
+      resource_class: << parameters.resource_class >>
+    steps:
+      - checkout
+      - run_other_sim_test
+  macos_ml_test:
+    executor: macos_executor
+    steps:
+      - checkout
+      - macos_pre_setup
+      - run_ml_test
+  macos_preprocessing_test:
+    executor: macos_executor
+    steps:
+      - checkout
+      - macos_pre_setup
+      - run_preprocessing_test
+  macos_stats_test:
+    executor: macos_executor
+    steps:
+      - checkout
+      - macos_pre_setup
+      - run_stats_test
+  macos_infra_test:
+    executor: macos_executor
+    steps:
+      - checkout
+      - macos_pre_setup
+      - run_infra_test
+  macos_component_infra_test:
+    executor: macos_executor
+    steps:
+      - checkout
+      - macos_pre_setup
+      - run_component_test_wrapper:
+          target_folder: tests/component/infra/
+          testmon_prefix: component_infra
+  macos_component_io_test:
+    executor: macos_executor
+    steps:
+      - checkout
+      - macos_pre_setup
+      - run_component_test_wrapper:
+          target_folder: tests/component/io/
+          testmon_prefix: component_io
+  macos_component_ml_test:
+    executor: macos_executor
+    steps:
+      - checkout
+      - macos_pre_setup
+      - run_component_test_wrapper:
+          target_folder: tests/component/ml/
+          testmon_prefix: component_ml
+  macos_component_stats_test:
+    executor: macos_executor
+    steps:
+      - checkout
+      - macos_pre_setup
+      - run_component_test_wrapper:
+          target_folder: tests/component/stats/
+          testmon_prefix: component_stats
+  macos_component_preprocessing_test:
+    executor: macos_executor
+    steps:
+      - checkout
+      - macos_pre_setup
+      - run_component_test_wrapper:
+          target_folder: tests/component/preprocessing
+          testmon_prefix: component_processing
+  macos_ml_sim_test:
+    executor: macos_executor
+    steps:
+      - checkout
+      - macos_pre_setup
+      - run_ml_sim_test
+  macos_other_sim_test:
+    executor: macos_executor
+    steps:
+      - checkout
+      - macos_pre_setup
+      - run_other_sim_test
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+workflows:
+  build_and_test:
+    jobs:
+      - linux_build:
+          name: linux_build-<<matrix.resource_class>>
+          matrix:
+            parameters:
+              resource_class: ["2xlarge+", "arm.2xlarge"]
+      - linux_ml_test:
+          matrix:
+            parameters:
+              resource_class: ["2xlarge+", "arm.2xlarge"]
+          requires:
+            - linux_build-<<matrix.resource_class>>
+      - linux_ml_sim_test:
+          matrix:
+            parameters:
+              resource_class: ["2xlarge+", "arm.2xlarge"]
+          requires:
+            - linux_build-<<matrix.resource_class>>
+      - linux_preprocessing_test:
+          matrix:
+            parameters:
+              resource_class: ["2xlarge+", "arm.2xlarge"]
+          requires:
+            - linux_build-<<matrix.resource_class>>
+      - linux_stats_test:
+          matrix:
+            parameters:
+              resource_class: ["2xlarge+", "arm.2xlarge"]
+          requires:
+            - linux_build-<<matrix.resource_class>>
+      - linux_infra_test:
+          matrix:
+            parameters:
+              resource_class: ["2xlarge+", "arm.2xlarge"]
+          requires:
+            - linux_build-<<matrix.resource_class>>
+      - linux_component_infra_test:
+          matrix:
+            parameters:
+              resource_class: ["2xlarge+", "arm.2xlarge"]
+          requires:
+            - linux_build-<<matrix.resource_class>>
+      - linux_component_io_test:
+          matrix:
+            parameters:
+              resource_class: ["2xlarge+", "arm.2xlarge"]
+          requires:
+            - linux_build-<<matrix.resource_class>>
+      - linux_component_ml_test:
+          matrix:
+            parameters:
+              resource_class: ["2xlarge+", "arm.2xlarge"]
+          requires:
+            - linux_build-<<matrix.resource_class>>
+      - linux_component_stats_test:
+          matrix:
+            parameters:
+              resource_class: ["2xlarge+", "arm.2xlarge"]
+          requires:
+            - linux_build-<<matrix.resource_class>>
+      - linux_component_preprocessing_test:
+          matrix:
+            parameters:
+              resource_class: ["2xlarge+", "arm.2xlarge"]
+          requires:
+            - linux_build-<<matrix.resource_class>>
+      - linux_other_sim_test:
+          matrix:
+            parameters:
+              resource_class: ["2xlarge+", "arm.2xlarge"]
+          requires:
+            - linux_build-<<matrix.resource_class>>
+      - macos_build
+      - macos_ml_test:
+          requires:
+            - macos_build
+      - macos_preprocessing_test:
+          requires:
+            - macos_build
+      - macos_stats_test:
+          requires:
+            - macos_build
+      - macos_infra_test:
+          requires:
+            - macos_build
+      - macos_component_infra_test:
+          requires:
+            - macos_build
+      - macos_component_io_test:
+          requires:
+            - macos_build
+      - macos_component_ml_test:
+          requires:
+            - macos_build
+      - macos_component_stats_test:
+          requires:
+            - macos_build
+      - macos_component_preprocessing_test:
+          requires:
+            - macos_build
+      - macos_ml_sim_test:
+          requires:
+            - macos_build
+      - macos_other_sim_test:
+          requires:
+            - macos_build

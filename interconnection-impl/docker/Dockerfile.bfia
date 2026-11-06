@@ -1,0 +1,12 @@
+# 与官方 morse-ecdh-header 同基座（linux/amd64），仅替换 ic_main / run.py / entrypoint
+FROM secretflow-registry.cn-hangzhou.cr.aliyuncs.com/secretflow/morse-ecdh-header:20251113
+
+WORKDIR /app
+
+COPY ic_main /app/ic_main
+COPY run.py /app/run.py
+COPY docker-conf/entrypoint.sh /app/docker-conf/entrypoint.sh
+
+RUN chmod +x /app/ic_main
+
+ENTRYPOINT ["bash", "/app/docker-conf/entrypoint.sh"]

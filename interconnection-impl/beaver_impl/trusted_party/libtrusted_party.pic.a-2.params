@@ -1,0 +1,3 @@
+rcsD
+bazel-out/k8-opt/bin/libspu/mpc/semi2k/beaver/beaver_impl/trusted_party/libtrusted_party.pic.a
+bazel-out/k8-opt/bin/libspu/mpc/semi2k/beaver/beaver_impl/trusted_party/_objs/trusted_party/trusted_party.pic.o

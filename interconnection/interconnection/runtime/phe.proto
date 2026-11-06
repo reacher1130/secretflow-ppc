@@ -1,0 +1,50 @@
+// Copyright 2023 Ant Group Co., Ltd.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package org.interconnection.v2.runtime;
+
+// Paillier runtime data exchange format //
+
+message Bigint {
+  bool is_neg = 1;  // false means positive and true means negative.
+  bytes little_endian_value = 2;  // absolute value encoded in little endian format
+}
+
+message PaillierPublicKey {
+  Bigint n = 1;
+  Bigint hs = 2;
+}
+
+message PaillierCiphertext {
+  Bigint c = 1;
+}
+
+// EC ElGamal runtime data exchange format //
+
+message EcElGamalPublicKey {
+  // Curve 的编号定义在 ecc.proto 中的 enum CurveType 中
+  int32 curve_name = 1;
+  // 序列化后的点，POINT_OCTET_FORMAT_X962_COMPRESSED 格式
+  // 格式说明见 ecc.proto 中的 enum PointOctetFormat
+  bytes h = 2;
+}
+
+message EcElGamalCiphertext {
+  // 序列化后的点，POINT_OCTET_FORMAT_X962_COMPRESSED 格式
+  // 格式说明见 ecc.proto 中的 enum PointOctetFormat
+  bytes c1 = 1;
+  bytes c2 = 2;
+}

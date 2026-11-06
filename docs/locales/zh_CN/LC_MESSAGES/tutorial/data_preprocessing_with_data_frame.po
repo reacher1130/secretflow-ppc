@@ -1,0 +1,204 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022 Ant Group Co., Ltd.
+# This file is distributed under the same license as the SecretFlow package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: SecretFlow \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-06-05 16:25+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.12.1\n"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:9
+msgid "Data Preprocessing with DataFrame"
+msgstr "数据预处理"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:20
+msgid ""
+"The following codes are demos only. It’s **NOT for production** due to "
+"system security concerns, please **DO NOT** use it directly in "
+"production."
+msgstr "注意： 以下代码仅供演示用途，在演示过程中可能会揭露部分信息。请勿直接将此示例代码用于实际生产环境中。在实际部署前，请根据您的具体需求和安全标准进行必要的修改和调整。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:31
+msgid ""
+"It is recommended to use `jupyter <https://jupyter.org/>`__ to run this "
+"tutorial."
+msgstr "推荐使用 `jupyter <https://jupyter.org/>`__  运行本教程。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:42
+msgid "Secretflow provides a variety of preprocessing tools to process data."
+msgstr "隐语提供了多种预处理工具来处理数据。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:54
+msgid "Preparation"
+msgstr "前置准备"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:56
+msgid "Initialize secretflow and create two parties alice and bob."
+msgstr "初始化隐语，创建alice和bob两个参与方。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:67
+msgid ""
+"💡 Before using preprocessing, you may need to get to know secretflow’s "
+"`DataFrame <../user_guide/preprocessing/DataFrame.ipynb>`__."
+msgstr ""
+"💡 在使用预处理之前，您可以需要先了解隐语 `DataFrame "
+"<../user_guide/preprocessing/DataFrame.ipynb>`__ 。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:95
+msgid "Data Preparation"
+msgstr "数据准备"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:106
+msgid ""
+"Here we use `iris <https://scikit-"
+"learn.org/stable/modules/generated/sklearn.datasets.load_iris.html>`__ as"
+" example data."
+msgstr ""
+"我们使用 `iris <https://scikit-"
+"learn.org/stable/modules/generated/sklearn.datasets.load_iris.html>`__ "
+"作为示例数据集。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:373
+msgid "Create a vertical partitioned DataFrame."
+msgstr "创建垂直DataFrame。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:407
+msgid ""
+"You can also create a horizontal partitioned DataFrame, which works the "
+"same with vertical partitioning for subsequent steps."
+msgstr "你也可以创建一个水平DataFrame，后续的操作对于水平和垂直DataFrame效果一样。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:446
+msgid "Preprocessing"
+msgstr "预处理"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:448
+msgid ""
+"Secretflow provides missing value filling, standardization, categorical "
+"features encoding, discretization .etc, which are similar to sklearn’s "
+"preprocessing."
+msgstr "隐语提供了缺失值填充、标准化、分类数据编码、离散化等多种预处理功能，其使用方式和sklearn的预处理一致。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:460
+msgid "Missing value filling"
+msgstr "缺失值填充"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:462
+msgid ""
+"DataFrame provides the fillna method, which can fill in missing values in"
+" the same way as pandas."
+msgstr "DataFrame提供了fillna方法，可以和pandas一样对缺失值进行填充。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:546
+msgid "Standardization"
+msgstr "标准化"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:549
+msgid "Scaling features to a range"
+msgstr "将特征缩放到某个范围。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:551
+msgid ""
+"Secretflow provides ``MinMaxScaler`` for scaling features to lie between "
+"a given minimum and maximum value. The input and output of MinMaxScaler "
+"are both ``DataFrame``."
+msgstr "隐语提供了 `MinMaxScaler` 用于把特征缩放到最大和最小值之间。MinMaxScaler的输入和输出形式均为DataFrame。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:553
+msgid "Here is an exmaple to scale ``sepal length (cm)`` to the [0, 1] range."
+msgstr "下面是将 `sepal length (cm)` 缩放到[0, 1]范围的示例。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:615
+msgid "Variance scaling"
+msgstr "方差缩放"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:617
+msgid ""
+"Secretflow provides ``StandardScaler`` for variance scaling. The input "
+"and output of StandardScaler are both DataFrames."
+msgstr "隐语提供了 `StandardScaler` 进行方差缩放。StandardScaler的输入和输出行为均为DataFrame。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:619
+msgid "Here is an exmaple to scale ``sepal length (cm)`` to unit variance."
+msgstr "下面是一个将 `sepal length (cm)` 进行方差缩放的例子。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:681
+msgid "Encoding categorical features"
+msgstr "分类特征编码"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:684
+msgid "OneHot encoding"
+msgstr "独热编码"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:686
+msgid ""
+"Secretflow provides ``OneHotEncoder`` for OneHot encoding. The input and "
+"output of OneHotEncoder are ``DataFrame``."
+msgstr "隐语提供了 `OneHotEncoder` 用作独热编码。 OneHotEncoder的输入和输出行为均为DataFrame。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:688
+msgid "Here is an example to encode target with onehot."
+msgstr "下面是一个对target列进行独热编码的例子。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:771
+msgid "Label encoding"
+msgstr "标签编码"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:773
+msgid ""
+"secretflow provides ``LabelEncoder`` for encoding target labels with "
+"value between 0 and n_classes-1. The input and output of LabelEncoder are"
+" ``DataFrame``."
+msgstr "隐语提供了 `LabelEncoder` 用作将标签列编码至[0, 类别数 - 1]。LabelEncoder的输入输出形式均为DataFrame。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:775
+msgid "Here is an example to encode target to [0, n_classes-1]."
+msgstr "下面是一个对target列进行标签编码的例子。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:846
+msgid "Discretization"
+msgstr "离散化"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:848
+msgid ""
+"SecretFlow provides ``KBinsDiscretizer`` for partitioning continuous "
+"features into discrete values. The input and output of KBinsDiscretizer "
+"are both ``DataFrame``."
+msgstr "隐语提供了 `KBinsDiscretizer` 用作将连续数据切分成离散值。KBinsDiscretizer的输入输出形式均为DataFrame。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:850
+msgid "Here is an example to partition ``petal length (cm)`` to 5 bins."
+msgstr "下面是一个将 `petal length (cm)` 切分成5个分桶的例子。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:917
+msgid "WOE encoding"
+msgstr "WOE编码"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:919
+msgid ""
+"secretflow provides ``VertWoeBinning`` to bin the features into buckets "
+"by quantile or chimerge method, and calculate the woe value and iv value "
+"in each bucket. And ``VertBinSubstitution`` can substitute the features "
+"with the woe value."
+msgstr ""
+"隐语提供了 `VertWoeBinning` "
+"，可以对特征按照数量或者chimerge方法进行分桶，并计算每个分桶的WOE和IV值。**VertBinSubstitution** "
+"可以把特征值替换成WOE值。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:921
+msgid "Here is an example to encode features to woe."
+msgstr "下面是一个对特征进行WOE编码的例子。"
+
+#: ../../tutorial/data_preprocessing_with_data_frame.ipynb:1186
+msgid "Ending"
+msgstr "收尾"
+

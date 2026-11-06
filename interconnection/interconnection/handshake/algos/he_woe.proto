@@ -1,0 +1,67 @@
+// Copyright 2024 Ant Group Co., Ltd.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package org.interconnection.v2.algos;
+
+//===================================//
+//  Protos used in HandshakeRequest  //
+//===================================//
+
+// [Sphinx doc begin anchor: HeWoeParamsProposal]
+message HeWoeParamsProposal {
+  repeated int32 supported_versions = 1;
+
+  // 支持的分箱方法
+  bool support_chimerge = 2;    // 是否支持ChiMerge分箱
+  bool support_quantile = 3;    // 是否支持等频分箱
+  bool support_eq_range = 4;    // 是否支持等距分箱
+}
+// [Sphinx doc end anchor: HeWoeParamsProposal]
+
+//===================================//
+//  Protos used in HandshakeResponse //
+//===================================//
+
+// [Sphinx doc begin anchor: HeWoeParamsResult]
+message HeWoeParamsResult {
+  // 版本号
+  int32 version = 1;
+
+  // 分箱方法: "chimerge", "quantile", "eq_range"
+  string binning_method = 2;
+
+  // 每个特征的最大分箱数
+  int32 bin_num = 3;
+
+  // 正样本标签值
+  string positive_label = 4;
+
+  // ChiMerge初始分箱数
+  int32 chimerge_init_bins = 5;
+
+  // ChiMerge目标分箱数
+  int32 chimerge_target_bins = 6;
+
+  // ChiMerge目标p值
+  double chimerge_target_pvalue = 7;
+
+  // 是否启用审计日志
+  bool enable_audit_log = 8;
+
+  // 标签列名
+  string label_col = 9;
+}
+// [Sphinx doc end anchor: HeWoeParamsResult] 

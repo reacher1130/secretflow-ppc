@@ -1,0 +1,3 @@
+rcsD
+bazel-out/k8-opt/bin/libspu/mpc/semi2k/beaver/beaver_impl/libbeaver_tfp.pic.a
+bazel-out/k8-opt/bin/libspu/mpc/semi2k/beaver/beaver_impl/_objs/beaver_tfp/beaver_tfp.pic.o

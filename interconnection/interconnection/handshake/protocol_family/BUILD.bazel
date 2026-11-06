@@ -1,0 +1,76 @@
+# Copyright 2023 Ant Group Co., Ltd.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@rules_python//python:defs.bzl", "py_library")
+load("@rules_python//python:proto.bzl", "py_proto_library")
+
+package(default_visibility = ["//visibility:public"])
+
+proto_library(
+    name = "protocol_family",
+    deps = [
+        ":ecc",
+        ":ss",
+    ],
+)
+
+py_library(
+    name = "protocol_family_py_proto",
+    data = [":create_init_file"],
+    deps = [
+        ":ecc_py_proto",
+        ":phe_py_proto",
+        ":ss_py_proto",
+    ],
+)
+
+proto_library(
+    name = "ecc",
+    srcs = ["ecc.proto"],
+)
+
+py_proto_library(
+    name = "ecc_py_proto",
+    deps = [":ecc"],
+)
+
+proto_library(
+    name = "ss",
+    srcs = ["ss.proto"],
+)
+
+py_proto_library(
+    name = "ss_py_proto",
+    deps = [":ss"],
+)
+
+proto_library(
+    name = "phe",
+    srcs = ["phe.proto"],
+    deps = [
+        "@com_google_protobuf//:any_proto",
+    ],
+)
+
+py_proto_library(
+    name = "phe_py_proto",
+    deps = [":phe"],
+)
+
+genrule(
+    name = "create_init_file",
+    outs = ["__init__.py"],
+    cmd = "touch $@",
+)

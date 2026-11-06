@@ -1,0 +1,19 @@
+apiVersion: kuscia.secretflow/v1alpha1
+kind: KusciaJob
+metadata:
+  name: ndm33
+  namespace: cross-domain
+  labels:
+    "kuscia.secretflow/interconn-protocol-type": "bfia"
+spec:
+  initiator: bob
+  tasks:
+    - alias: ss_lr_1
+      appImage: ss-lr
+      parties:
+        - domainID: alice
+          role: host
+        - domainID: bob
+          role: guest
+      taskInputConfig: '{"name":"ss_lr_1","initiator":{"node_id":"bob","role":"guest"},"job_params":{"guest":{"0":{}},"host":{"0":{}}},"module_name":"ss_lr","output":[{"key":"result-sslr.csv","type":"dataset"}],"role":{"guest":["bob"],"host":["alice"]},"task_params":{"arbiter":{},"common":{"algo":"ss_lr","batch_size":8,"field":64,"fxp_bits":18,"l0_norm":0,"l1_norm":0,"l2_norm":0.5,"last_batch_policy":"discard","learning_rate":0.0001,"num_epoch":10,"optimizer":"sgd","protocol":"semi2k","protocol_families":"ss","shard_serialize_format":"raw","sigmoid_mode":"minimax_1","skip_rows":1,"trunc_mode":"probabilistic","ttp_adjust_rank":0,"ttp_server_host":"172.16.220.101:9449","ttp_public_key":"LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZvd0ZBWUlLb0VjejFVQmdpMEdDQ3FCSE05VkFZSXRBMElBQkYvU1JQblE0K2JvOWY1aUlUN01SSjRaODMvQgpWYzIvYWVVQmpmM0x2dmhhb3NVZERaSUlYc3BUbms0c0JvbzR3WVphSC9McHJMRUtPeWdBalZYZWw3UT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg==","use_ttp":true,"start_transport":false,"feature_nums":{"host.0":10,"guest.0":10}},"guest":{"0":{"has_label":true,"name":"bob_2006286822.csv","namespace":"data"}},"host":{"0":{"has_label":false,"name":"alice_1964800946.csv","namespace":"data"}}}}'
+      tolerable: false

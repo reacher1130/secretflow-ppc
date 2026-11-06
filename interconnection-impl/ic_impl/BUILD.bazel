@@ -1,0 +1,141 @@
+# Copyright 2023 Ant Group Co., Ltd.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+cc_binary(
+    name = "ic_main",
+    srcs = ["ic_main.cc"],
+    data = [
+        "//ic_impl/data",
+    ],
+    deps = [
+        ":audit",
+        ":party",
+        "@com_github_gflags_gflags//:gflags",
+    ],
+)
+
+cc_library(
+    name = "party",
+    srcs = ["party.cc"],
+    hdrs = ["party.h"],
+    deps = [
+        ":audit",
+        ":factory",
+    ]
+)
+
+cc_library(
+    name = "factory",
+    hdrs = ["factory.h"],
+    srcs = [
+        "factory_psi_v2.cc",
+        "factory_lr.cc",
+    "factory_ss_xgb.cc",
+    "factory_ss_pearson.cc",
+        "factory_ss_vif.cc",
+        "factory_ss_compare.cc",
+    ],
+    deps = [
+        ":audit",
+        "//ic_impl/algo/psi/v2:psi_handler_v2",
+        "//ic_impl/algo/lr:lr_handler",
+    "//ic_impl/algo/ss_xgb:ss_xgb_handler",
+    "//ic_impl/algo/ss_pearson:ss_pearson_handler",
+        "//ic_impl/algo/ss_vif:ss_vif_handler",
+        "//ic_impl/algo/ss_compare:ss_compare_handler",
+    ]
+)
+
+cc_library(
+    name = "handler",
+    srcs = ["handler.cc"],
+    hdrs = ["handler.h"],
+    deps = [
+        ":audit",
+        ":context",
+        ":status",
+        ":psi_cc_proto",
+    ]
+)
+
+cc_library(
+    name = "context",
+    srcs = ["context.cc"],
+    hdrs = ["context.h"],
+    deps = [
+        ":audit",
+        "util",
+        ":handshake_cc_proto",
+    ]
+)
+
+cc_library(
+    name = "util",
+    srcs = ["util.cc"],
+    hdrs = ["util.h"],
+    deps = [
+        ":audit",
+        "@yacl//yacl/base:exception",
+        "@yacl//yacl/link:factory",
+        "@yacl//yacl/link/transport/blackbox_interconnect:mock_transport",
+        "@com_google_absl//absl/strings",
+        "@com_github_nlohmann_json//:json",
+    ],
+)
+
+cc_library(
+    name = "status",
+    srcs = ["status.cc"],
+    hdrs = ["status.h"],
+    deps = [
+        ":audit",
+        ":handshake_cc_proto"
+    ],
+)
+
+cc_library(
+    name = "common",
+    deps = [
+        ":audit",
+        ":handshake_cc_proto",
+        ":psi_cc_proto",
+        "@yacl//yacl/base:exception",
+    ]
+)
+
+cc_proto_library(
+    name = "handshake_cc_proto",
+    deps = [
+        "@org_interconnection//interconnection/handshake"],
+)
+
+cc_proto_library(
+    name = "psi_cc_proto",
+    deps = [
+        "@org_interconnection//interconnection/legacy/algos"],
+)
+
+cc_library(
+    name = "numeric_output",
+    hdrs = ["numeric_output.h"],
+    deps = [
+        ":audit","@spulib//libspu/core:context", "@spulib//libspu/core:value",
+            "@spulib//libspu/core:encoding", "@com_github_gabime_spdlog//:spdlog"],
+)
+
+cc_library(name="audit",hdrs=["audit.h"],deps=["@com_github_nlohmann_json//:json","@com_github_gabime_spdlog//:spdlog"])

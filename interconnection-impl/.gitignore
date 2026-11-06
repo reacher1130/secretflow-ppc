@@ -1,0 +1,18 @@
+CMakeLists.txt
+cmake-build-debug
+cmake-build-debug-remote
+
+# bazel
+bazel-*
+
+build
+.DS_Store
+
+.idea
+
+.vscode
+
+.tar
+*.tar
+
+ttp-build

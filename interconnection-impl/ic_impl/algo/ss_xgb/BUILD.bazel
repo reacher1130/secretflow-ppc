@@ -1,0 +1,38 @@
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+package(default_visibility = ["//visibility:public"])
+
+# 与 lr 的结构对齐，分别导出 context 与 handler 库，供 //ic_impl:factory 依赖
+
+cc_library(
+    name = "ss_xgb_context",
+    srcs = ["ss_xgb_context.cc"],
+    hdrs = ["ss_xgb_context.h"],
+    deps = [
+        "//ic_impl:context",
+        "//ic_impl/protocol_family/ss",
+        "@com_github_gflags_gflags//:gflags",
+        "@com_github_nlohmann_json//:json",
+    ],
+)
+
+cc_library(
+    name = "ss_xgb_handler",
+    srcs = ["ss_xgb_handler.cc"],
+    hdrs = ["ss_xgb_handler.h"],
+    deps = [
+        ":ss_xgb_context",
+        "//ic_impl:handler",
+        "//ic_impl:numeric_output",
+        "@spulib//libspu/mpc:factory",
+        "@spulib//libspu/kernel/hal:constants",
+        "@spulib//libspu/kernel/hal:polymorphic",
+        "@spulib//libspu/kernel/hal:shape_ops",
+        "@spulib//libspu/kernel/hal:public_helper",
+        "@spulib//libspu/kernel/hal:type_cast",
+        "@spulib//libspu/core:config",
+        "@spulib//libspu/core:encoding",
+        "@com_github_gflags_gflags//:gflags",
+        "@yacl//yacl/base:exception",
+    ],
+)

@@ -1,0 +1,5 @@
+spulib/_solib_k8/_Uexternal_Syacl_Syacl_Scrypto_Sossl-provider/libprov_shared.so /root/.cache/bazel/_bazel_root/c7b1b07eedc83e97728c040a3911b37a/execroot/spulib/bazel-out/k8-opt/bin/_solib_k8/_Uexternal_Syacl_Syacl_Scrypto_Sossl-provider/libprov_shared.so
+spulib/_solib_k8/libexternal_Szlib_Slibzlib.so /root/.cache/bazel/_bazel_root/c7b1b07eedc83e97728c040a3911b37a/execroot/spulib/bazel-out/k8-opt/bin/_solib_k8/libexternal_Szlib_Slibzlib.so
+spulib/external/yacl/yacl/crypto/ossl-provider/libprov_shared.so /root/.cache/bazel/_bazel_root/c7b1b07eedc83e97728c040a3911b37a/execroot/spulib/bazel-out/k8-opt/bin/external/yacl/yacl/crypto/ossl-provider/libprov_shared.so
+spulib/libspu/mpc/semi2k/beaver/beaver_impl/beaver_test /root/.cache/bazel/_bazel_root/c7b1b07eedc83e97728c040a3911b37a/execroot/spulib/bazel-out/k8-opt/bin/libspu/mpc/semi2k/beaver/beaver_impl/beaver_test
+yacl/yacl/crypto/ossl-provider/libprov_shared.so /root/.cache/bazel/_bazel_root/c7b1b07eedc83e97728c040a3911b37a/execroot/spulib/bazel-out/k8-opt/bin/external/yacl/yacl/crypto/ossl-provider/libprov_shared.so

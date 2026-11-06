@@ -1,0 +1,15 @@
+-shared
+-o
+bazel-out/k8-opt/bin/libspu/mpc/semi2k/beaver/beaver_impl/ttp_server/libservice_proto.so
+-fuse-ld=gold
+-Wl,-no-as-needed
+-Wl,-z,relro,-z,now
+-B/usr/bin
+-pass-exit-codes
+-static-libstdc++
+-static-libgcc
+-Wl,--gc-sections
+bazel-out/k8-opt/bin/libspu/mpc/semi2k/beaver/beaver_impl/ttp_server/_objs/service_proto/service.pb.pic.o
+-fopenmp
+-l:libstdc++.a
+-l:libgcc.a

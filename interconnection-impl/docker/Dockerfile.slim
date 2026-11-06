@@ -1,0 +1,30 @@
+# BFIA Kuscia 运行时镜像（无 Python/Bazel 编译环境）。
+#
+# 旧镜像以 morse-ecdh-header:20251113 为基座，约 1.82GB；后续 Python
+# slim 版本仍约 265MB。最终运行阶段只需要 ic_main、libgomp 和一个
+# curl 回调客户端，避免在每个 SS 算子镜像中重复携带 Python/requests。
+FROM debian:bookworm-slim AS strip
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends binutils \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY ic_main /tmp/ic_main
+RUN strip --strip-unneeded /tmp/ic_main
+
+FROM debian:bookworm-slim
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates curl libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY --from=strip /tmp/ic_main /app/ic_main
+COPY docker-conf/entrypoint-slim.sh /app/entrypoint.sh
+
+RUN chmod 0555 /app/ic_main /app/entrypoint.sh
+
+STOPSIGNAL SIGTERM
+# Kuscia may invoke an AppImage entrypoint through /bin/sh.  Invoke Bash
+# explicitly so the dotted Kuscia environment keys survive into ic_main.
+ENTRYPOINT ["/bin/bash", "/app/entrypoint.sh"]

@@ -1,0 +1,79 @@
+# Copyright 2023 Ant Group Co., Ltd.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+version: 2.1
+
+setup: true
+
+orbs:
+  path-filtering: circleci/path-filtering@1.2.0
+  continuation: circleci/continuation@1.0.0
+
+parameters:
+  GHA_Actor:
+    type: string
+    default: ""
+  GHA_Action:
+    type: string
+    default: ""
+  GHA_Event:
+    type: string
+    default: ""
+  GHA_Meta:
+    type: string
+    default: ""
+
+workflows:
+  unittest-workflow:
+    when:
+      and:
+        - not: << pipeline.parameters.GHA_Action >>
+        - not: << pipeline.parameters.GHA_Meta >>
+    jobs:
+      - path-filtering/filter:
+          base-revision: main
+          config-path: .circleci/continue-config.yml
+          tag: "3.9"
+          mapping: |
+            WORKSPACE                     base               true
+            .circleci/continue-config.yml base               true
+            uv.lock                       base               true
+            secretflow/data/.*            infra              true
+            secretflow/device/.*          infra              true
+            secretflow/distributed/.*     infra              true
+            secreflow/kuscia/.*           infra              true
+            secretflow/security/.*        infra              true
+            secretflow/utils/.*           infra              true
+            secretflow/maths/.*           sf_maths           true
+            secretflow/ml/.*              sf_ml              true
+            secretflow/preprocessing/.*   sf_preprocessing   true
+            secretflow/stats/.*           sf_stats           true
+            secretflow/component/.*       sf_component       true
+            secretflow/.*                 sf_any             true
+            tests/ml/.*                   test_ml            true
+            tests/preprocessing/.*        test_preprocessing true
+            tests/stats/.*                test_stats         true
+            tests/data/.*                 test_infra         true
+            tests/device/.*               test_infra         true
+            tests/security/.*             test_infra         true
+            tests/utils/.*                test_infra         true
+            tests/kuscia/.*               test_infra         true
+            tests/component/.*            test_component     true
+            tests/.*                      test_any           true
+  publish-workflow:
+    when:
+      equal: ["publish_pypi", << pipeline.parameters.GHA_Meta >>]
+    jobs:
+      - continuation/continue:
+          configuration_path: .circleci/release-config.yml

@@ -1,0 +1,196 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2022 Ant Group Co., Ltd.
+# This file is distributed under the same license as the SecretFlow package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: SecretFlow \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-09-14 22:41+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:2
+msgid "Decision Trees"
+msgstr "决策树模型"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:4
+msgid ""
+"With the help of Secret Sharing, a secure multi-party computation "
+"technique, SecretFlow implements provably secure gradient boosting model "
+":py:meth:`~secretflow.ml.boost.ss_xgb_v.model.Xgb` to support both "
+"regression and binary classification machine learning tasks."
+msgstr ""
+"SecretFlow使用多方安全计算的秘密分享技术实现了可证安全的梯度下降决策树模型 "
+":py:meth:`~secretflow.ml.boost.ss_xgb_v.model.Xgb` ，"
+"目前支持线性回归问题训练和二分类问题训练。"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:10
+msgid "Dataset Settings"
+msgstr "数据设定"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:11
+msgid "vertically partitioned dataset:"
+msgstr "垂直划分的数据集"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:13
+msgid "samples are aligned among the participants"
+msgstr "所有数据方的样本一致"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:14
+msgid "different participant obtains different features"
+msgstr "但是拥有样本的不同特征"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:15
+msgid "one participant owns the label"
+msgstr "只有一方持有标签"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:21
+msgid "XGBoost Training Algorithm"
+msgstr "XGBoost 训练算法"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:22
+msgid ""
+"Algorithm details can be found in `the official documents "
+"<https://xgboost.readthedocs.io/en/stable/tutorials/model.html>`_. The "
+"main process of building a single tree is as follows:"
+msgstr ""
+"详细原理及推导可见"
+" `官方文档 <https://xgboost.readthedocs.io/en/stable/tutorials/model.html>`_ 。"
+"单棵树分裂的主要过程如下："
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:25
+msgid ""
+"Statistics calculating: calculate the first-order gradient :math:`g_{i}` "
+"and second-order gradient :math:`h_{i}` for each sample with current "
+"prediction and label, according to the definition of loss function."
+msgstr ""
+"预计算：根据损失函数定义、样本标签、当前预测值，"
+"计算每个样本可以求得其一阶导 :math:`g_{i}` 和二阶导  :math:`h_{i}`"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:28
+msgid ""
+"Node splitting: enumerates all possible split candidates and choose the "
+"best one with the maximal gain. A split candidate is consisted of a split"
+" feature and a split value, which divides the samples in current node "
+":math:`I` into two child nodes :math:`I_{L}` and :math:`I_{R}`, according"
+" to their feature values. Then, a split gain is computed with the "
+"following formula:"
+msgstr ""
+"节点分裂：通过枚举所有分裂方案，选出带来最优增益值的方式执行分裂。"
+"分裂方案包含分裂特征和分裂阈值，可以将当前节点样本集合 :math:`I` 分裂为 "
+"左子树样本集合 :math:`I_{L}` 和右子树样本集合 :math:`I_{R}`， "
+"并由如下公式计算出此分裂方案的增益值："
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:38
+msgid ""
+"where :math:`\\lambda` and :math:`\\gamma` are the regularizers for the "
+"leaf number and leaf weights respectively. In this way, we can split the "
+"nodes recursively until the leaf."
+msgstr ""
+"其中：:math:`\\lambda` 和 :math:`\\gamma` 分别为叶节点数和叶节点权重的惩罚因子。"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:42
+msgid ""
+"Weight calculating: calculate the weights of leaf nodes with the "
+"following formula:"
+msgstr ""
+"权重计算：由落入该节点的样本计算得到，公式如下："
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:49
+msgid "Regression and classification share the same training process except:"
+msgstr ""
+"回归问题和分类问题的训练流程是相同的，除了："
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:51
+msgid ""
+"they employs different loss functions, i.e. MSE for regression and "
+"Logloss for classification."
+msgstr ""
+"损失函数的选择（回归-MSE，分类-Logloss)。"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:52
+msgid ""
+"classification executes an extra sigmoid function to transform the "
+"prediction into a probability."
+msgstr ""
+"分类问题需要将预测值通过sigmoid函数转化为概率。"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:55
+msgid "SS-XGB Training"
+msgstr "SS-XGB 训练算法"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:56
+msgid ""
+"SS-XGB :py:meth:`~secretflow.ml.boost.ss_xgb_v.model.Xgb` use secret "
+"sharing to compute the split gain and leaf weights."
+msgstr ""
+"SS-XGB :py:meth:`~secretflow.ml.boost.ss_xgb_v.model.Xgb` "
+"使用秘密分享计算分裂增益值和叶权重。"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:58
+msgid ""
+"In order to implement a secure joint training, we replace all the "
+"computations with secret sharing protocols, e.g. Addition, "
+"Multiplication, etc. In addition, we have to take special care to "
+"accumulate the gradients without leaking out the feature partial order of"
+" samples."
+msgstr ""
+"我们使用秘密分享协议提供的加/乘等操作来实现安全的多方联合计算。"
+"特别需要关注的问题是：如何在计算分桶加和时，不泄漏任何样本分布相关的信息。"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:62
+msgid "This problem can be solved by introducing an indicator vector 𝑆."
+msgstr "通过引入一个密态下的向量𝑆就可以解决这个问题。"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:66
+msgid ""
+"The samples to be accumulated is marked as 1 in 𝑆 and 0 otherwise. To "
+"preserve privacy, the indicator vector also transformed to secret shares."
+" In this way, the sum of the gradients of the samples can be computed as "
+"the inner product of the indicator vector and the gradient vector, which "
+"can be securely computed by secret sharing protocols."
+msgstr ""
+"向量𝑆中标记为1的样本是被选中的样本需要加和，0相反。为了保证样本分布不泄漏，"
+"这个向量也是通过秘密分享协议保护的。在秘密分享协议的保护下，计算向量𝑆和梯度向量的内积，"
+"即可得到梯度在分桶内的累加和。"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:70
+msgid ""
+"Similarly, the indicator trick can be used to hide the instance "
+"distribution on nodes. Refer to our paper `Large-Scale Secure XGB for "
+"Vertical Federated Learning <https://arxiv.org/pdf/2005.08479.pdf>`_ for "
+"more details about SS-XGB algorithm and security analysis."
+msgstr ""
+"通过这个方法我们就可以保护样本的分布信息不泄漏。更多的算法细节和安全分析："
+"`Large-Scale Secure XGB for Vertical Federated Learning <https://arxiv.org/pdf/2005.08479.pdf>`_"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:75
+msgid "Example"
+msgstr "用例"
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:77
+msgid ""
+"A local cluster(Standalone Mode) needs to be initialized as the running "
+"environment for this example. See `Deployment "
+"<../../getting_started/deployment>`_ and refer to the 'Cluster "
+"Mode'."
+msgstr ""
+"在本示例中使用单节点模式做示范。集群模式的部署方式： "
+"`Deployment <../../getting_started/deployment>`_ "
+
+
+#: ../../user_guide/mpc_ml/decision_tree.rst:80
+msgid ""
+"For more details about the APIs, see "
+":py:meth:`~secretflow.ml.boost.ss_xgb_v.model.Xgb`"
+msgstr ""
+"API详情：:py:meth:`~secretflow.ml.boost.ss_xgb_v.model.Xgb`"
+
+

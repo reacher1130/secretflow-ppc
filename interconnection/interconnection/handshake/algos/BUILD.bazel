@@ -1,0 +1,142 @@
+# Copyright 2023 Ant Group Co., Ltd.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+load("@rules_proto//proto:defs.bzl", "proto_library")
+load("@rules_python//python:defs.bzl", "py_library")
+load("@rules_python//python:proto.bzl", "py_proto_library")
+
+package(default_visibility = ["//visibility:public"])
+
+proto_library(
+    name = "algos",
+    deps = [
+        ":lr",
+        ":psi",
+        ":ss_xgb",
+        ":he_woe",
+        ":ss_pearsonr",
+        ":ss_vif",
+        ":ss_compare",
+    ],
+)
+
+py_library(
+    name = "algos_py_proto",
+    data = [":create_init_file"],
+    deps = [
+        ":lr_py_proto",
+        ":psi_py_proto",
+        ":sgb_py_proto",
+        ":ss_xgb_py_proto",
+        ":he_woe_py_proto",
+        ":ss_pearsonr_py_proto",
+        ":ss_vif_py_proto",
+        ":ss_compare_py_proto",
+    ],
+)
+
+proto_library(
+    name = "lr",
+    srcs = ["lr.proto"],
+    deps = [
+        ":optimizer",
+        "@com_google_protobuf//:any_proto",
+    ],
+)
+
+proto_library(
+    name = "optimizer",
+    srcs = ["optimizer.proto"],
+)
+
+py_proto_library(
+    name = "lr_py_proto",
+    deps = [":lr"],
+)
+
+proto_library(
+    name = "psi",
+    srcs = ["psi.proto"],
+)
+
+py_proto_library(
+    name = "psi_py_proto",
+    deps = [":psi"],
+)
+
+proto_library(
+    name = "sgb",
+    srcs = ["sgb.proto"],
+)
+
+py_proto_library(
+    name = "sgb_py_proto",
+    deps = [":sgb"],
+)
+
+proto_library(
+    name = "ss_xgb",
+    srcs = ["ss_xgb.proto"],
+)
+
+py_proto_library(
+    name = "ss_xgb_py_proto",
+    deps = [":ss_xgb"],
+)
+
+proto_library(
+    name = "he_woe",
+    srcs = ["he_woe.proto"],
+)
+
+py_proto_library(
+    name = "he_woe_py_proto",
+    deps = [":he_woe"],
+)
+
+proto_library(
+    name = "ss_pearsonr",
+    srcs = ["ss_pearsonr.proto"],
+)
+
+py_proto_library(
+    name = "ss_pearsonr_py_proto",
+    deps = [":ss_pearsonr"],
+)
+
+proto_library(
+    name = "ss_vif",
+    srcs = ["ss_vif.proto"],
+)
+
+py_proto_library(
+    name = "ss_vif_py_proto",
+    deps = [":ss_vif"],
+)
+
+proto_library(
+    name = "ss_compare",
+    srcs = ["ss_compare.proto"],
+)
+
+py_proto_library(
+    name = "ss_compare_py_proto",
+    deps = [":ss_compare"],
+)
+
+genrule(
+    name = "create_init_file",
+    outs = ["__init__.py"],
+    cmd = "touch $@",
+)

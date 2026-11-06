@@ -1,0 +1,27 @@
+# BFIA C++ 专用运行时镜像。
+#
+# 该镜像只服务于 ic_main 的双进程 BFIA 冒烟测试：不携带 Bazel、Python
+# wrapper 或 morse-ecdh-header 编译环境。Kuscia 生产部署仍使用 Dockerfile.bfia。
+# 第一阶段只用于剥离符号，binutils 不会进入最终镜像。
+FROM debian:bookworm-slim AS strip
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends binutils \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY ic_main /tmp/ic_main
+RUN strip --strip-unneeded /tmp/ic_main
+
+FROM debian:bookworm-slim
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+COPY --from=strip /tmp/ic_main /app/ic_main
+
+RUN chmod 0555 /app/ic_main
+
+STOPSIGNAL SIGTERM
+ENTRYPOINT ["/app/ic_main"]

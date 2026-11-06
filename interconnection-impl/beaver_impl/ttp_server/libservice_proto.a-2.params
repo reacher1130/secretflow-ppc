@@ -1,0 +1,3 @@
+rcsD
+bazel-out/k8-opt/bin/libspu/mpc/semi2k/beaver/beaver_impl/ttp_server/libservice_proto.a
+bazel-out/k8-opt/bin/libspu/mpc/semi2k/beaver/beaver_impl/ttp_server/_objs/service_proto/service.pb.o
